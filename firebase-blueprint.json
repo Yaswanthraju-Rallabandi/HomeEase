@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the application (customer or partner).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The user's unique ID." },
+        "name": { "type": "string", "description": "The user's display name." },
+        "email": { "type": "string", "format": "email", "description": "The user's email address." },
+        "phone": { "type": "string", "description": "The user's phone number." },
+        "role": { "type": "string", "enum": ["user", "partner", "admin"], "description": "The user's role." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the user was created." }
+      },
+      "required": ["uid", "name", "email", "role", "createdAt"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "A repair or service booking.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The booking ID." },
+        "userId": { "type": "string", "description": "The ID of the user who made the booking." },
+        "providerId": { "type": "string", "description": "The ID of the service provider." },
+        "serviceType": { "type": "string", "description": "The type of service requested." },
+        "status": { "type": "string", "enum": ["pending", "accepted", "completed", "cancelled"], "description": "The status of the booking." },
+        "address": { "type": "string", "description": "The address for the service." },
+        "latitude": { "type": "number", "description": "Latitude of the service location." },
+        "longitude": { "type": "number", "description": "Longitude of the service location." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the booking was created." }
+      },
+      "required": ["userId", "serviceType", "status", "address", "createdAt"]
+    },
+    "SOSRequest": {
+      "title": "SOSRequest",
+      "description": "An emergency SOS request.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The SOS request ID." },
+        "userId": { "type": "string", "description": "The ID of the user who made the SOS request." },
+        "status": { "type": "string", "enum": ["active", "resolved"], "description": "The status of the SOS request." },
+        "address": { "type": "string", "description": "The address for the SOS." },
+        "latitude": { "type": "number", "description": "Latitude of the SOS location." },
+        "longitude": { "type": "number", "description": "Longitude of the SOS location." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the SOS was created." }
+      },
+      "required": ["userId", "status", "address", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "/bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Stores service bookings."
+    },
+    "/sos_requests/{sosId}": {
+      "schema": { "$ref": "#/entities/SOSRequest" },
+      "description": "Stores emergency SOS requests."
+    }
+  }
+}

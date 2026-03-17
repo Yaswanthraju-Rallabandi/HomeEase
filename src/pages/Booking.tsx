@@ -1,0 +1,199 @@
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAppContext } from '../context/AppContext';
+import { CheckCircle2, MapPin, Phone, MessageCircle, ShieldCheck, ArrowRight, ArrowLeft } from 'lucide-react';
+import { motion } from 'motion/react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
+
+export default function Booking() {
+  const { id } = useParams();
+  const { language, locationData, requestLocation, user } = useAppContext();
+  const navigate = useNavigate();
+  const [confirmed, setConfirmed] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const texts = {
+    en: {
+      title: 'Confirm Booking',
+      provider: 'Repair Person',
+      price: 'Estimated Price',
+      address: 'Your Address',
+      confirmBtn: 'Confirm Booking',
+      success: 'Booking Confirmed!',
+      successSub: 'Repair person is on the way',
+      track: 'Track Live Location',
+      otp: 'Share this OTP when they arrive',
+      notify: 'Family member notified via WhatsApp',
+      useCurrentLocation: 'Use Current Location'
+    },
+    hi: {
+      title: 'बुकिंग पक्की करें',
+      provider: 'मिस्त्री',
+      price: 'अनुमानित कीमत',
+      address: 'आपका पता',
+      confirmBtn: 'बुकिंग पक्की करें',
+      success: 'बुकिंग पक्की हो गई!',
+      successSub: 'मिस्त्री रास्ते में है',
+      track: 'लाइव लोकेशन देखें',
+      otp: 'उनके आने पर यह OTP बताएं',
+      notify: 'परिवार के सदस्य को WhatsApp पर सूचित किया गया',
+      useCurrentLocation: 'वर्तमान स्थान का उपयोग करें'
+    },
+    te: {
+      title: 'బుకింగ్‌ని నిర్ధారించండి',
+      provider: 'రిపేర్ వ్యక్తి',
+      price: 'అంచనా ధర',
+      address: 'మీ చిరునామా',
+      confirmBtn: 'బుకింగ్‌ని నిర్ధారించండి',
+      success: 'బుకింగ్ నిర్ధారించబడింది!',
+      successSub: 'రిపేర్ వ్యక్తి దారిలో ఉన్నారు',
+      track: 'లైవ్ లొకేషన్ చూడండి',
+      otp: 'వారు వచ్చినప్పుడు ఈ OTP చెప్పండి',
+      notify: 'కుటుంబ సభ్యునికి WhatsApp ద్వారా తెలియజేయబడింది',
+      useCurrentLocation: 'ప్రస్తుత స్థానాన్ని ఉపయోగించండి'
+    }
+  };
+
+  const t = texts[language];
+
+  // Mock provider data
+  const provider = {
+    name: 'Ramesh Kumar',
+    role: 'Washing Machine Expert',
+    price: '₹300 - ₹500',
+    image: 'https://i.pravatar.cc/150?img=11',
+    verified: true,
+    rating: 4.8
+  };
+
+  const handleConfirm = async () => {
+    if (!user) {
+      alert("Please login to confirm booking");
+      navigate('/profile');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      await addDoc(collection(db, 'bookings'), {
+        userId: user.uid,
+        providerId: 'provider-123',
+        serviceType: 'Washing Machine Repair',
+        status: 'pending',
+        address: locationData.address,
+        latitude: locationData.latitude || 0,
+        longitude: locationData.longitude || 0,
+        createdAt: new Date().toISOString()
+      });
+      setConfirmed(true);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      alert("Failed to create booking. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (confirmed) {
+    return (
+      <div className="min-h-full flex flex-col items-center justify-center p-8 bg-green-50">
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center mb-8 shadow-lg shadow-green-200"
+        >
+          <CheckCircle2 size={64} className="text-white" />
+        </motion.div>
+        
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">{t.success}</h1>
+        <p className="text-gray-600 text-lg mb-8 text-center">{t.successSub}</p>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full mb-8">
+          <p className="text-sm text-gray-500 text-center mb-2">{t.otp}</p>
+          <p className="text-4xl font-bold text-center tracking-[0.5em] text-gray-900">4821</p>
+        </div>
+
+        <div className="flex items-center gap-3 text-green-700 bg-green-100 px-4 py-3 rounded-xl mb-8 w-full">
+          <MessageCircle size={24} />
+          <span className="text-sm font-medium">{t.notify}</span>
+        </div>
+
+        <button 
+          onClick={() => navigate('/home')}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all shadow-lg shadow-orange-200"
+        >
+          {t.track}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-full flex flex-col bg-gray-50">
+      <div className="bg-white p-6 border-b border-gray-100 flex items-center gap-4">
+        <button onClick={() => navigate(-1)} className="p-2 bg-gray-100 rounded-full">
+          <ArrowLeft size={24} className="text-gray-600" />
+        </button>
+        <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+      </div>
+
+      <div className="p-6 space-y-6 flex-1">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">{t.provider}</h2>
+          <div className="flex gap-4 items-center">
+            <img 
+              src={provider.image} 
+              alt={provider.name} 
+              className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
+              referrerPolicy="no-referrer"
+            />
+            <div>
+              <h3 className="font-bold text-xl text-gray-900 flex items-center gap-2">
+                {provider.name}
+                <ShieldCheck size={20} className="text-green-500" />
+              </h3>
+              <p className="text-gray-500">{provider.role}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">{t.price}</h2>
+          <p className="text-3xl font-bold text-gray-900">{provider.price}</p>
+          <p className="text-sm text-gray-500 mt-2">Final price depends on the exact repair needed.</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.address}</h2>
+            <button 
+              onClick={requestLocation}
+              disabled={locationData.loading}
+              className="text-orange-500 text-sm font-medium hover:text-orange-600 disabled:opacity-50"
+            >
+              {locationData.loading ? '...' : t.useCurrentLocation}
+            </button>
+          </div>
+          <div className="flex gap-3 items-start">
+            <MapPin size={24} className="text-orange-500 shrink-0 mt-1" />
+            <p className="text-gray-800 text-lg">
+              {locationData.address}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-6 bg-white border-t border-gray-100">
+        <button 
+          onClick={handleConfirm}
+          disabled={isSubmitting}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200 disabled:opacity-70"
+        >
+          {isSubmitting ? '...' : t.confirmBtn}
+          {!isSubmitting && <CheckCircle2 size={24} />}
+        </button>
+      </div>
+    </div>
+  );
+}

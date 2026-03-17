@@ -1,0 +1,5 @@
+{
+  "name": "HomeEase",
+  "description": "A voice-first, multilingual, on-demand home repair booking app for Indian households.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
+}
