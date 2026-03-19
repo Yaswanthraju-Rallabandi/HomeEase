@@ -7,6 +7,7 @@ export default function Layout() {
   const { isPartner } = useAppContext();
   const navigate = useNavigate();
   const location = useLocation();
+  console.log("[v0] Layout rendered - location:", location.pathname, "isPartner:", isPartner);
 
   const fullScreenPages = [
     '/', 
