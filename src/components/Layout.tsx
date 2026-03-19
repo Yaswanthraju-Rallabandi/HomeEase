@@ -10,6 +10,7 @@ export default function Layout() {
 
   const fullScreenPages = [
     '/', 
+    '/language',
     '/login', 
     '/sos', 
     '/input/voice', 
@@ -22,8 +23,8 @@ export default function Layout() {
 
   if (isFullScreen) {
     return (
-      <div className="min-h-screen bg-gray-50 flex justify-center sm:items-center sm:p-4">
-        <div className="w-full max-w-md bg-white h-[100dvh] sm:h-[90vh] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden relative sm:border-[8px] sm:border-gray-900">
+      <div className="min-h-screen bg-black flex justify-center sm:items-center sm:p-4 relative overflow-hidden">
+        <div className="w-full max-w-md bg-black h-[100dvh] sm:h-[90vh] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden relative sm:border-[8px] sm:border-gray-800 z-10">
           <div className="h-full overflow-y-auto">
             <Outlet />
           </div>
@@ -33,8 +34,8 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex justify-center sm:items-center sm:p-4">
-      <div className="w-full max-w-md bg-white h-[100dvh] sm:h-[90vh] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden relative sm:border-[8px] sm:border-gray-900 flex flex-col">
+    <div className="min-h-screen bg-black flex justify-center sm:items-center sm:p-4 relative overflow-hidden">
+      <div className="w-full max-w-md bg-black h-[100dvh] sm:h-[90vh] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden relative sm:border-[8px] sm:border-gray-800 flex flex-col z-10">
         
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto pb-28 sm:pb-20">
@@ -42,10 +43,10 @@ export default function Layout() {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center py-3 px-6 pb-safe sm:pb-6 sm:rounded-b-[2rem]">
+        <div className="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md border-t border-white/10 flex justify-around items-center py-3 px-6 pb-safe sm:pb-6 sm:rounded-b-[2rem]">
           <button 
             onClick={() => navigate(isPartner ? '/partner' : '/home')}
-            className={`flex flex-col items-center gap-1 ${location.pathname === (isPartner ? '/partner' : '/home') ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 ${location.pathname === (isPartner ? '/partner' : '/home') ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <Home size={24} />
             <span className="text-[10px] font-medium">Home</span>
@@ -54,7 +55,7 @@ export default function Layout() {
           {!isPartner && (
             <button 
               onClick={() => navigate('/search')}
-              className={`flex flex-col items-center gap-1 ${location.pathname === '/search' ? 'text-orange-500' : 'text-gray-400'}`}
+              className={`flex flex-col items-center gap-1 ${location.pathname === '/search' ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
             >
               <Search size={24} />
               <span className="text-[10px] font-medium">Search</span>
@@ -63,7 +64,7 @@ export default function Layout() {
 
           <button 
             onClick={() => navigate('/history')}
-            className={`flex flex-col items-center gap-1 ${location.pathname === '/history' ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 ${location.pathname === '/history' ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <Clock size={24} />
             <span className="text-[10px] font-medium">History</span>
@@ -71,7 +72,7 @@ export default function Layout() {
 
           <button 
             onClick={() => navigate('/profile')}
-            className={`flex flex-col items-center gap-1 ${location.pathname === '/profile' ? 'text-orange-500' : 'text-gray-400'}`}
+            className={`flex flex-col items-center gap-1 ${location.pathname === '/profile' ? 'text-blue-400' : 'text-gray-500 hover:text-gray-300'}`}
           >
             <User size={24} />
             <span className="text-[10px] font-medium">Profile</span>

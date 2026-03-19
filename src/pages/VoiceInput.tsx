@@ -5,7 +5,7 @@ import { Mic, Square, ArrowRight, X, ArrowLeft, Volume2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { speakText, stopSpeaking } from '../utils/speech';
 
-const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 export default function VoiceInput() {
   const { language } = useAppContext();
@@ -19,30 +19,30 @@ export default function VoiceInput() {
   const texts = {
     en: {
       title: 'Speak your problem',
-      subtitle: 'Tap the mic and tell us what needs fixing',
+      subtitle: 'Tap the mic and tell us what you need',
       recording: 'Listening...',
       stop: 'Stop',
-      next: 'Find Repair Person',
+      next: 'Search Nearby',
       cancel: 'Cancel',
-      example: 'Example: "My washing machine is not working"'
+      example: 'Example: "I need a watch shop"'
     },
     hi: {
       title: 'अपनी समस्या बोलें',
-      subtitle: 'माइक पर टैप करें और बताएं कि क्या ठीक करना है',
+      subtitle: 'माइक पर टैप करें और बताएं कि आपको क्या चाहिए',
       recording: 'सुन रहे हैं...',
       stop: 'रोकें',
-      next: 'मिस्त्री खोजें',
+      next: 'आसपास खोजें',
       cancel: 'रद्द करें',
-      example: 'उदाहरण: "मेरी वाशिंग मशीन काम नहीं कर रही है"'
+      example: 'उदाहरण: "मुझे घड़ी की दुकान चाहिए"'
     },
     te: {
       title: 'మీ సమస్యను చెప్పండి',
-      subtitle: 'మైక్‌ను నొక్కి, ఏమి రిపేర్ చేయాలో చెప్పండి',
+      subtitle: 'మైక్‌ను నొక్కి, మీకు ఏమి కావాలో చెప్పండి',
       recording: 'వింటున్నాము...',
       stop: 'ఆపండి',
-      next: 'రిపేర్ వ్యక్తిని వెతకండి',
+      next: 'దగ్గరలో వెతకండి',
       cancel: 'రద్దు చేయండి',
-      example: 'ఉదాహరణ: "మా వాషింగ్ మెషీన్ పని చేయడం లేదు"'
+      example: 'ఉదాహరణ: "నాకు వాచ్ షాప్ కావాలి"'
     }
   };
 
@@ -128,63 +128,68 @@ export default function VoiceInput() {
   };
 
   return (
-    <div className="min-h-full flex flex-col bg-white">
-      <div className="flex items-center justify-between p-6 border-b border-gray-100">
+    <div className="min-h-full flex flex-col bg-black text-white">
+      <div className="flex items-center justify-between p-6 bg-black/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-10">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-2 bg-gray-100 rounded-full">
-            <ArrowLeft size={24} className="text-gray-600" />
+          <button onClick={() => navigate('/home')} className="p-2 bg-white/10 rounded-full border border-white/10 hover:bg-white/20 transition-colors">
+            <ArrowLeft size={24} className="text-white" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+          <h1 className="text-2xl font-bold text-white">{t.title}</h1>
         </div>
         <button 
           onClick={() => speakText(`${t.title}. ${t.subtitle}`, language)}
-          className="p-2 bg-orange-100 rounded-full hover:bg-orange-200 transition-colors"
+          className="p-2 bg-blue-500/20 rounded-full hover:bg-blue-500/30 transition-colors border border-blue-500/30"
         >
-          <Volume2 size={24} className="text-orange-600" />
+          <Volume2 size={24} className="text-blue-400" />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center p-8">
-        <p className="text-gray-500 text-lg text-center mb-12">{t.subtitle}</p>
+      <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-blue-500/20 rounded-full blur-[100px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-500/20 rounded-full blur-[100px]" />
+        </div>
 
-        <div className="relative mb-12">
+        <p className="text-gray-400 text-lg text-center mb-12 relative z-10">{t.subtitle}</p>
+
+        <div className="relative mb-12 z-10">
           {isRecording && (
             <motion.div 
               animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
               transition={{ repeat: Infinity, duration: 2 }}
-              className="absolute inset-0 bg-orange-500 rounded-full"
+              className="absolute inset-0 bg-red-500 rounded-full blur-md"
             />
           )}
           <button
             onClick={handleToggleRecord}
-            className={`relative z-10 w-32 h-32 rounded-full flex items-center justify-center shadow-xl transition-colors ${
-              isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-orange-500 hover:bg-orange-600'
+            className={`relative w-40 h-40 rounded-full flex items-center justify-center shadow-2xl transition-colors border ${
+              isRecording ? 'bg-red-700 hover:bg-red-600 border-red-500 shadow-[0_0_40px_rgba(239,68,68,0.4)]' : 'bg-white/10 hover:bg-white/20 border-white/20 shadow-[0_0_40px_rgba(255,255,255,0.1)]'
             }`}
           >
             {isRecording ? (
-              <Square size={48} className="text-white fill-current" />
+              <Square size={64} className="text-white fill-current" />
             ) : (
-              <Mic size={48} className="text-white" />
+              <Mic size={64} className="text-white" />
             )}
           </button>
         </div>
 
         {isRecording && (
-          <div className="text-center mb-8">
-            <p className="text-red-500 font-bold text-xl mb-2 animate-pulse">{t.recording}</p>
+          <div className="text-center mb-8 relative z-10">
+            <p className="text-red-400 font-bold text-xl mb-2 animate-pulse">{t.recording}</p>
             <p className="text-gray-400 font-mono text-lg">00:{timer.toString().padStart(2, '0')}</p>
           </div>
         )}
 
         {error && (
-          <div className="bg-red-50 p-4 rounded-2xl border border-red-100 w-full mb-8">
-            <p className="text-red-800 text-center">{error}</p>
+          <div className="bg-red-500/20 p-4 rounded-2xl border border-red-500/30 w-full mb-8 relative z-10">
+            <p className="text-red-300 text-center">{error}</p>
           </div>
         )}
 
         {!isRecording && !transcript && !error && (
-          <div className="bg-orange-50 p-4 rounded-2xl border border-orange-100 w-full">
-            <p className="text-orange-800 text-center italic">{t.example}</p>
+          <div className="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/20 w-full relative z-10">
+            <p className="text-blue-300 text-center italic">{t.example}</p>
           </div>
         )}
 
@@ -192,18 +197,18 @@ export default function VoiceInput() {
           <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            className="w-full"
+            className="w-full relative z-10"
           >
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-200 mb-8 relative">
-              <div className="absolute -top-3 left-6 bg-white px-2 text-sm font-bold text-orange-500 uppercase tracking-wider">
+            <div className="bg-white/5 p-6 rounded-2xl border border-white/10 mb-8 relative shadow-sm backdrop-blur-md">
+              <div className="absolute -top-3 left-6 bg-blue-700 px-3 py-0.5 rounded-full text-xs font-bold text-white uppercase tracking-wider shadow-sm">
                 You said
               </div>
-              <p className="text-2xl text-gray-800 font-medium leading-relaxed">"{transcript}"</p>
+              <p className="text-2xl text-white font-medium leading-relaxed mt-2">"{transcript}"</p>
             </div>
 
             <button
-              onClick={handleNext}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200"
+               onClick={handleNext}
+               className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20"
             >
               {t.next}
               <ArrowRight size={24} />

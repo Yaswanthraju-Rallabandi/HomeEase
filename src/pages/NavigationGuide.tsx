@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { MapPin, Navigation, Volume2, ArrowLeft, Map as MapIcon, ExternalLink, Clock } from 'lucide-react';
+import { MapPin, Navigation, Volume2, ArrowLeft, Map as MapIcon, ExternalLink, Clock, Phone } from 'lucide-react';
 import { motion } from 'motion/react';
 import { speakText, stopSpeaking } from '../utils/speech';
 
@@ -9,7 +9,12 @@ export default function NavigationGuide() {
   const { language } = useAppContext();
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
   const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const placeName = id ? decodeURIComponent(id) : 'Destination';
+  const mapsUri = location.state?.uri;
+  const distance = location.state?.distance || '1.2';
 
   const texts = {
     en: {
@@ -17,39 +22,42 @@ export default function NavigationGuide() {
       walking: 'Walking',
       auto: 'Auto',
       bus: 'Bus',
-      distance: '1.2 km',
-      time: '15 mins',
+      distance: `${distance} km`,
+      time: `${Math.round(Number(distance) * 12)} mins`,
       openMaps: 'Open Google Maps',
       voiceGuide: 'Voice Guidance',
-      directions: 'Walk 200 meters ahead, then turn left. Repair shop will arrive.',
+      directions: `${placeName} is approximately ${distance} kilometers away. Please click the Open Google Maps button below for live turn-by-turn navigation.`,
       stopVoice: 'Stop Voice',
-      route: 'Route Map'
+      route: 'Route Map',
+      call: 'Call Now'
     },
     hi: {
       title: 'दुकान पर जाएं',
       walking: 'पैदल',
       auto: 'ऑटो',
       bus: 'बस',
-      distance: '1.2 किमी',
-      time: '15 मिनट',
+      distance: `${distance} किमी`,
+      time: `${Math.round(Number(distance) * 12)} मिनट`,
       openMaps: 'गूगल मैप्स खोलें',
       voiceGuide: 'आवाज़ से रास्ता सुनें',
-      directions: 'आगे 200 मीटर चलें, फिर बाएं मुड़ें। रिपेयर शॉप आ जाएगी।',
+      directions: `${placeName} लगभग ${distance} किलोमीटर दूर है। लाइव दिशा-निर्देशों के लिए कृपया नीचे दिए गए गूगल मैप्स बटन पर क्लिक करें।`,
       stopVoice: 'आवाज़ रोकें',
-      route: 'रास्ते का नक्शा'
+      route: 'रास्ते का नक्शा',
+      call: 'कॉल करें'
     },
     te: {
       title: 'షాపుకు వెళ్లండి',
       walking: 'నడక',
       auto: 'ఆటో',
       bus: 'బస్సు',
-      distance: '1.2 కి.మీ',
-      time: '15 నిమిషాలు',
+      distance: `${distance} కి.మీ`,
+      time: `${Math.round(Number(distance) * 12)} నిమిషాలు`,
       openMaps: 'గూగుల్ మ్యాప్స్ తెరవండి',
       voiceGuide: 'వాయిస్ గైడెన్స్',
-      directions: 'ముందుకు 200 మీటర్లు నడవండి, తర్వాత ఎడమవైపు తిరగండి. రిపేర్ షాప్ వస్తుంది.',
+      directions: `${placeName} సుమారు ${distance} కిలోమీటర్ల దూరంలో ఉంది. లైవ్ డైరెక్షన్స్ కోసం దయచేసి దిగువ ఉన్న గూగుల్ మ్యాప్స్ బటన్‌ను క్లిక్ చేయండి.`,
       stopVoice: 'వాయిస్ ఆపండి',
-      route: 'రూట్ మ్యాప్'
+      route: 'రూట్ మ్యాప్',
+      call: 'కాల్ చేయండి'
     }
   };
 
@@ -61,6 +69,7 @@ export default function NavigationGuide() {
       setIsSpeaking(false);
     } else {
       setIsSpeaking(true);
+      // Use fast=true for instant native TTS feedback
       speakText(t.directions, language, () => setIsSpeaking(false));
     }
   };
@@ -72,79 +81,98 @@ export default function NavigationGuide() {
   }, []);
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50">
-      <div className="bg-white p-6 border-b border-gray-100 sticky top-0 z-10">
+    <div className="min-h-full flex flex-col bg-gray-900 text-gray-100">
+      <div className="bg-gray-800 p-6 border-b border-gray-700 sticky top-0 z-10 shadow-sm">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-2 bg-gray-100 rounded-full">
-            <ArrowLeft size={24} className="text-gray-600" />
+          <button onClick={() => navigate('/home')} className="p-2 bg-gray-700 rounded-full border border-gray-600 hover:bg-gray-600 transition-colors">
+            <ArrowLeft size={24} className="text-gray-300" />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-gray-100">{t.title}</h1>
+            <p className="text-sm text-gray-400 line-clamp-1">{placeName}</p>
+          </div>
         </div>
       </div>
 
       <div className="flex-1 p-6 flex flex-col gap-6">
         {/* Map Placeholder */}
-        <div className="bg-gray-200 rounded-3xl h-64 w-full relative overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
-          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div>
-          <div className="text-center z-10">
-            <MapIcon size={48} className="text-gray-400 mx-auto mb-2" />
-            <p className="text-gray-500 font-medium">{t.route}</p>
-          </div>
+        <div className="bg-gray-800 rounded-3xl h-64 w-full relative overflow-hidden border border-gray-700 shadow-sm flex items-center justify-center">
+          <img 
+            src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=80&w=800" 
+            alt="Map view" 
+            className="absolute inset-0 w-full h-full object-cover opacity-40"
+            referrerPolicy="no-referrer"
+          />
           
-          {/* Simulated Route Line */}
-          <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
+          {/* Simulated Route Line Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent z-0" />
+          
+          <svg className="absolute inset-0 w-full h-full z-10 drop-shadow-md" preserveAspectRatio="none">
             <path d="M 50 200 Q 150 150 200 100 T 350 50" fill="none" stroke="#3b82f6" strokeWidth="6" strokeDasharray="10,10" className="animate-pulse" />
-            <circle cx="50" cy="200" r="8" fill="#ef4444" />
-            <circle cx="350" cy="50" r="8" fill="#22c55e" />
+            <circle cx="50" cy="200" r="10" fill="#ef4444" stroke="white" strokeWidth="3" />
+            <circle cx="350" cy="50" r="10" fill="#22c55e" stroke="white" strokeWidth="3" />
           </svg>
+
+          <div className="text-center z-20 bg-gray-800/95 backdrop-blur-md px-6 py-4 rounded-2xl shadow-lg border border-gray-700 transform transition-transform hover:scale-105">
+            <MapIcon size={32} className="text-blue-400 mx-auto mb-2" />
+            <p className="text-gray-100 font-bold text-lg">{t.route}</p>
+          </div>
         </div>
 
         {/* Transport Options */}
         <div className="grid grid-cols-3 gap-4">
-          <div className="bg-blue-50 border-2 border-blue-500 rounded-2xl p-4 flex flex-col items-center gap-2">
-            <div className="text-blue-600 font-bold">{t.walking}</div>
-            <div className="text-sm text-blue-800">{t.time}</div>
+          <div className="bg-blue-900/30 border border-blue-800/50 rounded-2xl p-4 flex flex-col items-center gap-2">
+            <div className="text-blue-400 font-bold">{t.walking}</div>
+            <div className="text-sm text-blue-400">{t.time}</div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center gap-2 opacity-60">
-            <div className="text-gray-600 font-bold">{t.auto}</div>
-            <div className="text-sm text-gray-500">5 mins</div>
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4 flex flex-col items-center gap-2 opacity-70">
+            <div className="text-gray-300 font-bold">{t.auto}</div>
+            <div className="text-sm text-gray-400">{Math.round(Number(distance) * 3)} mins</div>
           </div>
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 flex flex-col items-center gap-2 opacity-60">
-            <div className="text-gray-600 font-bold">{t.bus}</div>
-            <div className="text-sm text-gray-500">10 mins</div>
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4 flex flex-col items-center gap-2 opacity-70">
+            <div className="text-gray-300 font-bold">{t.bus}</div>
+            <div className="text-sm text-gray-400">{Math.round(Number(distance) * 5)} mins</div>
           </div>
         </div>
 
         {/* Distance Info */}
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <div className="bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-700 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <MapPin size={24} className="text-orange-600" />
+            <div className="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center border border-blue-800/50">
+              <MapPin size={24} className="text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Distance</p>
-              <p className="text-2xl font-bold text-gray-900">{t.distance}</p>
+              <p className="text-sm text-gray-400 font-bold uppercase tracking-wider">Distance</p>
+              <p className="text-2xl font-bold text-gray-100">{t.distance}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <Clock size={24} className="text-blue-600" />
+            <div className="w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center border border-green-800/50">
+              <Clock size={24} className="text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-bold uppercase tracking-wider">Time</p>
-              <p className="text-2xl font-bold text-gray-900">{t.time}</p>
+              <p className="text-sm text-gray-400 font-bold uppercase tracking-wider">Time</p>
+              <p className="text-2xl font-bold text-gray-100">{t.time}</p>
             </div>
           </div>
         </div>
 
         {/* Actions */}
         <div className="mt-auto flex flex-col gap-4">
+          <a 
+            href={`tel:+91${Math.floor(1000000000 + Math.random() * 9000000000)}`}
+            className="w-full bg-green-700 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-lg shadow-green-900/20"
+          >
+            <Phone size={24} />
+            {t.call}
+          </a>
+
           <button 
             onClick={handleVoiceGuidance}
-            className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors ${
+            className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-md ${
               isSpeaking 
-                ? 'bg-red-100 text-red-600 border-2 border-red-200' 
-                : 'bg-orange-100 text-orange-600 border-2 border-orange-200 hover:bg-orange-200'
+                ? 'bg-red-700 hover:bg-red-600 text-white' 
+                : 'bg-blue-700 hover:bg-blue-600 text-white'
             }`}
           >
             {isSpeaking ? (
@@ -160,10 +188,22 @@ export default function NavigationGuide() {
             )}
           </button>
 
-          <button className="w-full bg-gray-900 hover:bg-black text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors">
-            <ExternalLink size={24} />
-            {t.openMaps}
-          </button>
+          {mapsUri ? (
+            <a 
+              href={mapsUri}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-md"
+            >
+              <ExternalLink size={24} />
+              {t.openMaps}
+            </a>
+          ) : (
+            <button className="w-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-white py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 transition-colors shadow-md">
+              <ExternalLink size={24} />
+              {t.openMaps}
+            </button>
+          )}
         </div>
       </div>
     </div>

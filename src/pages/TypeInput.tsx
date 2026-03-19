@@ -9,9 +9,9 @@ export default function TypeInput() {
   const [query, setQuery] = useState('');
 
   const texts = {
-    en: { title: 'Type Problem', placeholder: 'Describe what needs fixing...', next: 'Find Repair Person' },
-    hi: { title: 'लिखकर बताएं', placeholder: 'बताएं कि क्या ठीक करना है...', next: 'मिस्त्री खोजें' },
-    te: { title: 'టైప్ చేయండి', placeholder: 'ఏమి రిపేర్ చేయాలో వివరించండి...', next: 'రిపేర్ వ్యక్తిని వెతకండి' }
+    en: { title: 'Type Problem', placeholder: 'Describe what you need...', next: 'Search Nearby' },
+    hi: { title: 'लिखकर बताएं', placeholder: 'बताएं कि आपको क्या चाहिए...', next: 'आसपास खोजें' },
+    te: { title: 'టైప్ చేయండి', placeholder: 'మీకు ఏమి కావాలో వివరించండి...', next: 'దగ్గరలో వెతకండి' }
   };
 
   const t = texts[language];
@@ -24,12 +24,12 @@ export default function TypeInput() {
   };
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50">
-      <div className="flex items-center gap-4 p-6 border-b border-gray-100 bg-white">
-        <button onClick={() => navigate(-1)} className="p-2 bg-gray-100 rounded-full">
-          <ArrowLeft size={24} className="text-gray-600" />
+    <div className="min-h-full flex flex-col bg-black text-white">
+      <div className="flex items-center gap-4 p-6 bg-black/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-10">
+        <button onClick={() => navigate('/home')} className="p-2 bg-white/10 rounded-full border border-white/20 hover:bg-white/20 transition-colors">
+          <ArrowLeft size={24} className="text-gray-300" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+        <h1 className="text-2xl font-bold text-white">{t.title}</h1>
       </div>
 
       <div className="flex-1 p-6">
@@ -37,7 +37,7 @@ export default function TypeInput() {
           <textarea
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 w-full p-6 border-2 border-gray-200 rounded-3xl text-xl focus:ring-orange-500 focus:border-orange-500 transition-colors resize-none shadow-sm"
+            className="flex-1 w-full p-6 bg-white/5 border-2 border-white/10 rounded-3xl text-xl text-white focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none shadow-sm placeholder:text-gray-500"
             placeholder={t.placeholder}
             autoFocus
           />
@@ -45,7 +45,7 @@ export default function TypeInput() {
           <button
             type="submit"
             disabled={!query.trim()}
-            className="mt-6 w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200"
+            className="mt-6 w-full bg-blue-700 hover:bg-blue-600 disabled:bg-white/10 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-md"
           >
             {t.next}
             <ArrowRight size={24} />

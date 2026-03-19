@@ -24,12 +24,12 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50">
-      <div className="bg-white p-6 border-b border-gray-100 sticky top-0 z-10 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
-          <ArrowLeft size={24} className="text-gray-600" />
+    <div className="min-h-full flex flex-col bg-black text-white">
+      <div className="bg-black/90 backdrop-blur-md p-6 border-b border-white/10 sticky top-0 z-10 flex items-center gap-4 shadow-sm">
+        <button onClick={() => navigate('/home')} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors border border-white/20">
+          <ArrowLeft size={24} className="text-gray-300" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+        <h1 className="text-2xl font-bold text-white">{t.title}</h1>
       </div>
 
       <div className="p-6">
@@ -41,14 +41,14 @@ export default function Search() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl text-lg focus:ring-orange-500 focus:border-orange-500 transition-colors"
+            className="block w-full pl-12 pr-4 py-4 bg-white/5 border-2 border-white/10 rounded-2xl text-lg text-white focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-500 shadow-sm"
             placeholder={t.placeholder}
             autoFocus
           />
           <button
             type="submit"
             disabled={!query.trim()}
-            className="mt-4 w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200"
+            className="mt-4 w-full bg-blue-700 hover:bg-blue-600 disabled:bg-white/10 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-md"
           >
             {t.searchBtn}
             <ArrowRight size={24} />

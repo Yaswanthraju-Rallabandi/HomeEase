@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Phone, ArrowRight, ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ShapeLandingHero } from '../components/ui/shape-landing-hero';
 
 export default function Login() {
   const { language, user, isPartner, setUser, setIsPartner } = useAppContext();
@@ -24,7 +25,7 @@ export default function Login() {
       sendOtp: 'Send OTP',
       enterOtp: 'Enter 4-digit OTP',
       verify: 'Verify & Login',
-      secure: 'Secure Login via Firebase',
+      secure: 'Secure Login',
       partnerLogin: 'Login as Repair Partner'
     },
     hi: {
@@ -34,7 +35,7 @@ export default function Login() {
       sendOtp: 'OTP भेजें',
       enterOtp: '4-अंकीय OTP दर्ज करें',
       verify: 'सत्यापित करें और लॉग इन करें',
-      secure: 'फ़ायरबेस के माध्यम से सुरक्षित लॉगिन',
+      secure: 'सुरक्षित लॉगिन',
       partnerLogin: 'रिपेयर पार्टनर के रूप में लॉगिन करें'
     },
     te: {
@@ -44,7 +45,7 @@ export default function Login() {
       sendOtp: 'OTP పంపండి',
       enterOtp: '4-అంకెల OTP నమోదు చేయండి',
       verify: 'ధృవీకరించండి & లాగిన్ అవ్వండి',
-      secure: 'ఫైర్‌బేస్ ద్వారా సురక్షిత లాగిన్',
+      secure: 'సురక్షిత లాగిన్',
       partnerLogin: 'రిపేర్ పార్టనర్‌గా లాగిన్ అవ్వండి'
     }
   };
@@ -63,88 +64,111 @@ export default function Login() {
 
   const handleVerify = () => {
     if (otp === '1234') {
-      setUser({ phone, name: 'User' });
+      const mockUser = {
+        uid: 'mock-user-' + Date.now(),
+        name: 'User',
+        phone: phone,
+        role: 'user'
+      };
+      localStorage.setItem('mockUser', JSON.stringify(mockUser));
+      setUser(mockUser);
+      setIsPartner(false);
       navigate('/home');
     }
   };
 
   const handlePartnerLogin = () => {
+    const mockPartner = {
+      uid: 'mock-partner-' + Date.now(),
+      name: 'Raju Plumber',
+      phone: '9999999999',
+      role: 'partner'
+    };
+    localStorage.setItem('mockUser', JSON.stringify(mockPartner));
+    setUser(mockPartner);
     setIsPartner(true);
-    setUser({ phone: '9999999999', name: 'Raju Plumber', role: 'partner' });
     navigate('/partner');
   };
 
   return (
-    <div className="min-h-full flex flex-col p-8 bg-white relative">
-      <button onClick={() => navigate(-1)} className="absolute top-6 left-6 p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
-        <ArrowLeft size={24} className="text-gray-600" />
+    <div className="min-h-full relative bg-black flex flex-col">
+      <button onClick={() => navigate(-1)} className="absolute top-6 left-6 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors z-50 border border-white/10">
+        <ArrowLeft size={24} className="text-white" />
       </button>
-      <div className="mt-12 mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t.title}</h1>
-        <p className="text-gray-500 text-lg">{t.subtitle}</p>
-      </div>
 
-      <div className="space-y-6 flex-1">
-        {!otpSent ? (
-          <>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <span className="text-gray-500 font-medium">+91</span>
+      <ShapeLandingHero
+        badge={t.secure}
+        title1="HomeEase"
+        title2={t.title}
+      >
+        <div className="w-full space-y-6 relative z-50 bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 shadow-2xl">
+          <p className="text-gray-300 text-lg text-center font-medium mb-4">{t.subtitle}</p>
+          
+          {!otpSent ? (
+            <>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span className="text-gray-400 font-medium">+91</span>
+                </div>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  className="block w-full pl-14 pr-4 py-4 bg-white/5 border-2 border-white/10 rounded-2xl text-xl font-medium text-white focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-500 shadow-sm"
+                  placeholder={t.phonePlaceholder}
+                  autoComplete="tel"
+                  autoFocus
+                />
               </div>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                className="block w-full pl-14 pr-4 py-4 border-2 border-gray-200 rounded-2xl text-lg focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                placeholder={t.phonePlaceholder}
-              />
-            </div>
 
-            <button
-              onClick={handleSendOtp}
-              disabled={phone.length < 10}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200"
+              <button
+                onClick={handleSendOtp}
+                disabled={phone.length < 10}
+                className="w-full bg-blue-700 hover:bg-blue-600 disabled:bg-white/5 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20"
+              >
+                {t.sendOtp}
+                <ArrowRight size={24} />
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                  className="block w-full px-4 py-4 bg-white/5 border-2 border-white/10 rounded-2xl text-3xl tracking-[1em] text-center font-bold text-white focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder:text-gray-500 shadow-sm"
+                  placeholder="----"
+                  autoComplete="one-time-code"
+                  autoFocus
+                />
+              </div>
+
+              <button
+                onClick={handleVerify}
+                disabled={otp.length < 4}
+                className="w-full bg-blue-700 hover:bg-blue-600 disabled:bg-white/5 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20"
+              >
+                {t.verify}
+                <ShieldCheck size={24} />
+              </button>
+              <p className="text-center text-sm text-gray-400 mt-4 flex items-center justify-center gap-1">
+                <ShieldCheck size={16} className="text-blue-400" />
+                {t.secure}
+              </p>
+            </>
+          )}
+
+          <div className="pt-4 mt-4 border-t border-white/10">
+            <button 
+              onClick={handlePartnerLogin}
+              className="w-full bg-white/5 hover:bg-white/10 text-white font-medium py-4 rounded-2xl transition-colors shadow-sm border border-white/10"
             >
-              {t.sendOtp}
-              <ArrowRight size={24} />
+              {t.partnerLogin}
             </button>
-          </>
-        ) : (
-          <>
-            <div className="relative">
-              <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                className="block w-full px-4 py-4 border-2 border-gray-200 rounded-2xl text-2xl tracking-[1em] text-center font-bold focus:ring-orange-500 focus:border-orange-500 transition-colors"
-                placeholder="----"
-              />
-            </div>
-
-            <button
-              onClick={handleVerify}
-              disabled={otp.length < 4}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:bg-orange-300 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200"
-            >
-              {t.verify}
-              <ShieldCheck size={24} />
-            </button>
-            <p className="text-center text-sm text-gray-500 mt-4 flex items-center justify-center gap-1">
-              <ShieldCheck size={16} className="text-green-500" />
-              {t.secure}
-            </p>
-          </>
-        )}
-      </div>
-
-      <div className="mt-auto pb-8">
-        <button 
-          onClick={handlePartnerLogin}
-          className="w-full text-orange-600 font-medium py-4 border-2 border-orange-100 rounded-2xl hover:bg-orange-50 transition-colors"
-        >
-          {t.partnerLogin}
-        </button>
-      </div>
+          </div>
+        </div>
+      </ShapeLandingHero>
     </div>
   );
 }

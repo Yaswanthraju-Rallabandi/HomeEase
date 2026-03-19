@@ -57,10 +57,12 @@ export default function Booking() {
 
   const t = texts[language];
 
-  // Mock provider data
+  const placeName = id ? decodeURIComponent(id) : 'Ramesh Kumar';
+
+  // Mock provider data based on the selected place
   const provider = {
-    name: 'Ramesh Kumar',
-    role: 'Washing Machine Expert',
+    name: placeName,
+    role: 'Local Service Provider',
     price: '₹300 - ₹500',
     image: 'https://i.pravatar.cc/150?img=11',
     verified: true,
@@ -70,7 +72,7 @@ export default function Booking() {
   const handleConfirm = async () => {
     if (!user) {
       alert("Please login to confirm booking");
-      navigate('/profile');
+      navigate('/login');
       return;
     }
     
@@ -78,8 +80,8 @@ export default function Booking() {
     try {
       await addDoc(collection(db, 'bookings'), {
         userId: user.uid,
-        providerId: 'provider-123',
-        serviceType: 'Washing Machine Repair',
+        providerId: placeName,
+        serviceType: 'Local Service Request',
         status: 'pending',
         address: locationData.address,
         latitude: locationData.latitude || 0,
@@ -97,31 +99,31 @@ export default function Booking() {
 
   if (confirmed) {
     return (
-      <div className="min-h-full flex flex-col items-center justify-center p-8 bg-green-50">
+      <div className="min-h-full flex flex-col items-center justify-center p-8 bg-black text-white relative">
         <motion.div 
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center mb-8 shadow-lg shadow-green-200"
+          className="w-32 h-32 bg-green-500/20 rounded-full flex items-center justify-center mb-8 shadow-sm border border-green-500/30"
         >
-          <CheckCircle2 size={64} className="text-white" />
+          <CheckCircle2 size={64} className="text-green-400" />
         </motion.div>
         
-        <h1 className="text-3xl font-bold text-gray-900 mb-2 text-center">{t.success}</h1>
-        <p className="text-gray-600 text-lg mb-8 text-center">{t.successSub}</p>
+        <h1 className="text-3xl font-bold text-white mb-2 text-center">{t.success}</h1>
+        <p className="text-gray-400 text-lg mb-8 text-center">{t.successSub}</p>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 w-full mb-8">
-          <p className="text-sm text-gray-500 text-center mb-2">{t.otp}</p>
-          <p className="text-4xl font-bold text-center tracking-[0.5em] text-gray-900">4821</p>
+        <div className="bg-white/5 p-6 rounded-2xl shadow-sm border border-white/10 w-full mb-8 backdrop-blur-md">
+          <p className="text-sm text-gray-400 text-center mb-2">{t.otp}</p>
+          <p className="text-4xl font-bold text-center tracking-[0.5em] text-white">4821</p>
         </div>
 
-        <div className="flex items-center gap-3 text-green-700 bg-green-100 px-4 py-3 rounded-xl mb-8 w-full">
+        <div className="flex items-center gap-3 text-green-400 bg-green-500/10 border border-green-500/20 px-4 py-3 rounded-xl mb-8 w-full">
           <MessageCircle size={24} />
           <span className="text-sm font-medium">{t.notify}</span>
         </div>
 
         <button 
           onClick={() => navigate('/home')}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all shadow-lg shadow-orange-200"
+          className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all shadow-lg shadow-blue-900/20"
         >
           {t.track}
         </button>
@@ -130,65 +132,65 @@ export default function Booking() {
   }
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50">
-      <div className="bg-white p-6 border-b border-gray-100 flex items-center gap-4">
-        <button onClick={() => navigate(-1)} className="p-2 bg-gray-100 rounded-full">
-          <ArrowLeft size={24} className="text-gray-600" />
+    <div className="min-h-full flex flex-col bg-black text-white">
+      <div className="bg-black/80 backdrop-blur-md p-6 border-b border-white/10 flex items-center gap-4 sticky top-0 z-10">
+        <button onClick={() => navigate('/home')} className="p-2 bg-white/10 rounded-full border border-white/10 hover:bg-white/20 transition-colors">
+          <ArrowLeft size={24} className="text-white" />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
+        <h1 className="text-2xl font-bold text-white">{t.title}</h1>
       </div>
 
-      <div className="p-6 space-y-6 flex-1">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">{t.provider}</h2>
+      <div className="p-6 space-y-6 flex-1 relative z-10">
+        <div className="bg-white/5 p-6 rounded-2xl shadow-sm border border-white/10 backdrop-blur-md">
+          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">{t.provider}</h2>
           <div className="flex gap-4 items-center">
             <img 
               src={provider.image} 
               alt={provider.name} 
-              className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
+              className="w-16 h-16 rounded-full object-cover border-2 border-white/10"
               referrerPolicy="no-referrer"
             />
             <div>
-              <h3 className="font-bold text-xl text-gray-900 flex items-center gap-2">
+              <h3 className="font-bold text-xl text-white flex items-center gap-2">
                 {provider.name}
-                <ShieldCheck size={20} className="text-green-500" />
+                <ShieldCheck size={20} className="text-green-400" />
               </h3>
-              <p className="text-gray-500">{provider.role}</p>
+              <p className="text-gray-400">{provider.role}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">{t.price}</h2>
-          <p className="text-3xl font-bold text-gray-900">{provider.price}</p>
+        <div className="bg-white/5 p-6 rounded-2xl shadow-sm border border-white/10 backdrop-blur-md">
+          <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">{t.price}</h2>
+          <p className="text-3xl font-bold text-white">{provider.price}</p>
           <p className="text-sm text-gray-500 mt-2">Final price depends on the exact repair needed.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="bg-white/5 p-6 rounded-2xl shadow-sm border border-white/10 backdrop-blur-md">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">{t.address}</h2>
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t.address}</h2>
             <button 
               onClick={requestLocation}
               disabled={locationData.loading}
-              className="text-orange-500 text-sm font-medium hover:text-orange-600 disabled:opacity-50"
+              className="text-blue-400 text-sm font-medium hover:text-blue-300 disabled:opacity-50 transition-colors"
             >
               {locationData.loading ? '...' : t.useCurrentLocation}
             </button>
           </div>
           <div className="flex gap-3 items-start">
-            <MapPin size={24} className="text-orange-500 shrink-0 mt-1" />
-            <p className="text-gray-800 text-lg">
+            <MapPin size={24} className="text-blue-400 shrink-0 mt-1" />
+            <p className="text-gray-300 text-lg">
               {locationData.address}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="p-6 bg-white border-t border-gray-100">
+      <div className="p-6 bg-black/80 backdrop-blur-md border-t border-white/10 sticky bottom-0 z-10">
         <button 
           onClick={handleConfirm}
           disabled={isSubmitting}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-orange-200 disabled:opacity-70"
+          className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20 disabled:opacity-70"
         >
           {isSubmitting ? '...' : t.confirmBtn}
           {!isSubmitting && <CheckCircle2 size={24} />}

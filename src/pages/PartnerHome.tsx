@@ -65,13 +65,13 @@ export default function PartnerHome() {
   };
 
   return (
-    <div className="min-h-full flex flex-col bg-gray-50 pb-24">
+    <div className="min-h-full flex flex-col bg-black text-white pb-24">
       {/* Header */}
-      <div className="bg-gray-900 pt-12 pb-6 px-6 rounded-b-[2rem] shadow-md flex justify-between items-start">
+      <div className="bg-black/90 backdrop-blur-md pt-12 pb-6 px-6 rounded-b-[2rem] shadow-sm border-b border-white/10 flex justify-between items-start sticky top-0 z-10">
         <div className="flex items-start gap-3">
           <button 
             onClick={() => { setIsPartner(false); setUser(null); navigate('/'); }} 
-            className="mt-1 p-2 bg-gray-800 hover:bg-gray-700 rounded-full text-white transition-colors"
+            className="mt-1 p-2 bg-white/10 hover:bg-white/20 rounded-full text-gray-300 transition-colors border border-white/20"
           >
             <LogOut size={20} />
           </button>
@@ -79,61 +79,61 @@ export default function PartnerHome() {
             <h1 className="text-white text-2xl font-bold mb-1">{t.greeting}</h1>
             <p className="text-gray-400 text-lg flex items-center gap-2">
               {user?.name || 'Raju Plumber'}
-              <ShieldCheck size={18} className="text-green-500" />
+              <ShieldCheck size={18} className="text-green-400" />
             </p>
           </div>
         </div>
-        <div className="bg-gray-800 p-3 rounded-2xl text-center">
-          <Star size={24} className="text-yellow-500 fill-current mx-auto mb-1" />
+        <div className="bg-white/5 p-3 rounded-2xl text-center border border-white/10">
+          <Star size={24} className="text-yellow-400 fill-current mx-auto mb-1" />
           <span className="text-white font-bold text-lg">4.8</span>
         </div>
       </div>
 
       <div className="px-6 -mt-4 relative z-10">
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 flex justify-between items-center">
+        <div className="bg-white/5 rounded-2xl p-6 shadow-sm border border-white/10 flex justify-between items-center">
           <div>
-            <p className="text-gray-500 text-sm font-bold uppercase tracking-wider mb-1">{t.earnings}</p>
-            <p className="text-3xl font-bold text-gray-900 flex items-center">
+            <p className="text-gray-400 text-sm font-bold uppercase tracking-wider mb-1">{t.earnings}</p>
+            <p className="text-3xl font-bold text-white flex items-center">
               <IndianRupee size={24} />
               1,250
             </p>
           </div>
-          <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-            <IndianRupee size={24} className="text-green-600" />
+          <div className="w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center border border-green-500/30">
+            <IndianRupee size={24} className="text-green-400" />
           </div>
         </div>
       </div>
 
       <div className="px-6 mt-8">
         {jobStatus === 'new' && (
-          <div className="bg-orange-50 rounded-3xl p-6 border-2 border-orange-200 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-orange-500 text-white px-4 py-1 rounded-bl-2xl font-bold text-sm animate-pulse">
+          <div className="bg-blue-900/20 rounded-3xl p-6 border-2 border-blue-500/30 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-blue-700 text-white px-4 py-1 rounded-bl-2xl font-bold text-sm animate-pulse">
               {t.newJob}
             </div>
             
-            <h2 className="text-xl font-bold text-gray-900 mt-4 mb-2">{job.problem}</h2>
+            <h2 className="text-xl font-bold text-white mt-4 mb-2">{job.problem}</h2>
             
-            <div className="flex items-center gap-4 text-gray-600 mb-4">
+            <div className="flex items-center gap-4 text-gray-300 mb-4">
               <div className="flex items-center gap-1">
-                <MapPin size={18} className="text-orange-500" />
+                <MapPin size={18} className="text-blue-400" />
                 <span className="font-medium">{job.distance}</span>
               </div>
               <div className="flex items-center gap-1">
-                <IndianRupee size={18} className="text-green-600" />
-                <span className="font-bold text-green-700">{job.price}</span>
+                <IndianRupee size={18} className="text-green-400" />
+                <span className="font-bold text-green-400">{job.price}</span>
               </div>
             </div>
 
-            <p className="text-gray-500 text-sm mb-6">{job.address}</p>
+            <p className="text-gray-400 text-sm mb-6">{job.address}</p>
 
             <div className="flex gap-4">
               <button 
                 onClick={() => setJobStatus('accepted')}
-                className="flex-1 bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition-colors"
+                className="flex-1 bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-colors shadow-sm"
               >
                 {t.accept}
               </button>
-              <button className="px-6 bg-white border-2 border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-50 transition-colors">
+              <button className="px-6 bg-white/5 border-2 border-white/10 text-gray-300 font-bold rounded-2xl hover:bg-white/10 transition-colors">
                 {t.reject}
               </button>
             </div>
@@ -141,17 +141,17 @@ export default function PartnerHome() {
         )}
 
         {jobStatus === 'accepted' && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Heading to {job.customer}</h2>
+          <div className="bg-white/5 rounded-3xl p-6 border border-white/10 shadow-sm">
+            <h2 className="text-xl font-bold text-white mb-4">Heading to {job.customer}</h2>
             
-            <div className="bg-blue-50 p-4 rounded-2xl mb-6 flex items-start gap-3">
-              <Navigation size={24} className="text-blue-600 shrink-0" />
-              <p className="text-blue-900 font-medium">{job.address}</p>
+            <div className="bg-blue-900/30 border border-blue-500/30 p-4 rounded-2xl mb-6 flex items-start gap-3">
+              <Navigation size={24} className="text-blue-400 shrink-0" />
+              <p className="text-blue-200 font-medium">{job.address}</p>
             </div>
 
             <button 
               onClick={() => setJobStatus('arrived')}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-colors flex justify-center items-center gap-2"
+              className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-colors flex justify-center items-center gap-2 shadow-sm"
             >
               <Navigation size={20} />
               {t.navigate}
@@ -159,7 +159,7 @@ export default function PartnerHome() {
             
             <button 
               onClick={() => setJobStatus('arrived')}
-              className="w-full mt-4 bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition-colors"
+              className="w-full mt-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-4 rounded-2xl transition-colors"
             >
               {t.arrived}
             </button>
@@ -167,20 +167,20 @@ export default function PartnerHome() {
         )}
 
         {jobStatus === 'arrived' && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm text-center">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">{t.enterOtp}</h2>
-            <p className="text-gray-500 mb-6">Ask the customer for the 4-digit OTP</p>
+          <div className="bg-white/5 rounded-3xl p-6 border border-white/10 shadow-sm text-center">
+            <h2 className="text-xl font-bold text-white mb-2">{t.enterOtp}</h2>
+            <p className="text-gray-400 mb-6">Ask the customer for the 4-digit OTP</p>
             
             <input 
               type="text" 
               placeholder="----" 
-              className="w-full text-center text-4xl tracking-[1em] font-bold py-4 border-2 border-gray-200 rounded-2xl mb-6 focus:border-gray-900 focus:ring-gray-900"
+              className="w-full text-center text-4xl tracking-[1em] font-bold py-4 bg-white/5 border-2 border-white/10 rounded-2xl mb-6 focus:border-blue-500 focus:ring-blue-500 text-white placeholder-gray-600"
               maxLength={4}
             />
 
             <button 
               onClick={() => setJobStatus('completed')}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl transition-colors flex justify-center items-center gap-2"
+              className="w-full bg-green-700 hover:bg-green-600 text-white font-bold py-4 rounded-2xl transition-colors flex justify-center items-center gap-2 shadow-sm"
             >
               <CheckCircle2 size={24} />
               {t.verify}
@@ -189,21 +189,21 @@ export default function PartnerHome() {
         )}
 
         {jobStatus === 'completed' && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 size={40} className="text-green-600" />
+          <div className="bg-white/5 rounded-3xl p-6 border border-white/10 shadow-sm text-center">
+            <div className="w-20 h-20 bg-green-900/30 border border-green-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 size={40} className="text-green-400" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Job Done!</h2>
-            <p className="text-gray-500 mb-8">Collect payment from customer</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Job Done!</h2>
+            <p className="text-gray-400 mb-8">Collect payment from customer</p>
             
-            <div className="bg-gray-50 p-6 rounded-2xl mb-8">
-              <p className="text-sm text-gray-500 uppercase tracking-wider font-bold mb-2">Total Amount</p>
-              <p className="text-4xl font-bold text-gray-900">₹450</p>
+            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl mb-8">
+              <p className="text-sm text-gray-400 uppercase tracking-wider font-bold mb-2">Total Amount</p>
+              <p className="text-4xl font-bold text-white">₹450</p>
             </div>
 
             <button 
               onClick={() => setJobStatus('new')}
-              className="w-full bg-gray-900 hover:bg-black text-white font-bold py-4 rounded-2xl transition-colors"
+              className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 rounded-2xl transition-colors shadow-md"
             >
               {t.collect}
             </button>

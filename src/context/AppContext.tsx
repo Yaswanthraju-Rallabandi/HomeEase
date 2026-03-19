@@ -58,25 +58,39 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             setIsPartner(userData.role === 'partner');
           } else {
             // Create a new user profile if it doesn't exist
+            const pendingRole = sessionStorage.getItem('pendingRole') || 'user';
             const newUserData = {
               uid: firebaseUser.uid,
               name: firebaseUser.displayName || 'New User',
               email: firebaseUser.email || '',
               phone: firebaseUser.phoneNumber || '',
-              role: 'user',
+              role: pendingRole,
               createdAt: new Date().toISOString()
             };
             await setDoc(userDocRef, newUserData);
             setUser(newUserData);
-            setIsPartner(false);
+            setIsPartner(pendingRole === 'partner');
+            sessionStorage.removeItem('pendingRole');
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
           setUser(null);
         }
       } else {
-        setUser(null);
-        setIsPartner(false);
+        const mockUserStr = localStorage.getItem('mockUser');
+        if (mockUserStr) {
+          try {
+            const mockUser = JSON.parse(mockUserStr);
+            setUser(mockUser);
+            setIsPartner(mockUser.role === 'partner');
+          } catch (e) {
+            setUser(null);
+            setIsPartner(false);
+          }
+        } else {
+          setUser(null);
+          setIsPartner(false);
+        }
       }
       setAuthLoading(false);
     });
@@ -92,12 +106,40 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
     setLocationData(prev => ({ ...prev, loading: true, error: null, shortAddress: 'Locating...' }));
 
+    let isResolved = false;
+    
+    // Fallback timeout in case the browser's geolocation hangs completely
+    const fallbackTimeout = setTimeout(() => {
+      if (!isResolved) {
+        isResolved = true;
+        setLocationData(prev => ({ 
+          ...prev, 
+          loading: false, 
+          error: 'Location request timed out',
+          shortAddress: 'Location timeout'
+        }));
+      }
+    }, 12000);
+
     navigator.geolocation.getCurrentPosition(
       async (position) => {
+        if (isResolved) return;
+        isResolved = true;
+        clearTimeout(fallbackTimeout);
+
         const { latitude, longitude } = position.coords;
         try {
+          // Add a timeout to the fetch request
+          const controller = new AbortController();
+          const fetchTimeout = setTimeout(() => controller.abort(), 5000);
+          
           // Reverse geocoding using Nominatim
-          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`, {
+            headers: { 'Accept-Language': 'en-US,en;q=0.9' },
+            signal: controller.signal
+          });
+          clearTimeout(fetchTimeout);
+          
           const data = await response.json();
           
           if (data && data.display_name) {
@@ -131,6 +173,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         }
       },
       (error) => {
+        if (isResolved) return;
+        isResolved = true;
+        clearTimeout(fallbackTimeout);
+        
         console.error('Error getting location:', error);
         setLocationData(prev => ({ 
           ...prev, 
@@ -139,7 +185,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           shortAddress: 'Location access denied'
         }));
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      // Use low accuracy for much faster results, and a strict 10s timeout
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
     );
   };
 
