@@ -23,7 +23,10 @@ import Search from './pages/Search';
 import NavigationGuide from './pages/NavigationGuide';
 
 function RootRedirect() {
-  const { user, isPartner } = useAppContext();
+  const { user, isPartner, authLoading } = useAppContext();
+  if (authLoading) {
+    return <div className="min-h-screen bg-black" />;
+  }
   if (user) {
     return <Navigate to={isPartner ? "/partner" : "/home"} replace />;
   }
