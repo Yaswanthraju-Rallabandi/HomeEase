@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Mic, Camera, PenTool, Search, PhoneCall, Zap, Droplets, Fan, Wrench, Bug, MapPin, Globe, Bell, ChevronRight } from 'lucide-react';
 import { speakText, stopSpeaking } from '../utils/speech';
-import { EtherealBeams } from '../components/ui/ethereal-beams';
+import { EtherealBeams, EtherealBeamsDark } from '../components/ui/ethereal-beams';
 
 export default function Home() {
   const { language, setLanguage, locationData, requestLocation } = useAppContext();

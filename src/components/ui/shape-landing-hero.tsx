@@ -91,7 +91,7 @@ export function ShapeLandingHero({
                 ease: [0.25, 0.4, 0.25, 1],
             },
         }),
-    };
+    } as any;
 
     return (
         <div className="relative min-h-full w-full flex flex-1 items-center justify-center overflow-hidden bg-black py-12">
