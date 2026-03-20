@@ -23,20 +23,7 @@ import Search from './pages/Search';
 import NavigationGuide from './pages/NavigationGuide';
 
 function RootRedirect() {
-  const { user, isPartner, authLoading } = useAppContext();
-  
-  // Show loading state while auth is initializing
-  if (authLoading) {
-    return (
-      <div className="min-h-full flex items-center justify-center bg-black">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-  
+  const { user, isPartner } = useAppContext();
   if (user) {
     return <Navigate to={isPartner ? "/partner" : "/home"} replace />;
   }

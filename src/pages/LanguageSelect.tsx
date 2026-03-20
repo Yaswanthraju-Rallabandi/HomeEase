@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ShapeLandingHero } from '../components/ui/shape-landing-hero';
 
 export default function LanguageSelect() {
-  const { setLanguage, user, isPartner, authLoading } = useAppContext();
+  const { setLanguage, user, isPartner } = useAppContext();
   const navigate = useNavigate();
 
   const handleSelect = (lang: 'en' | 'hi' | 'te') => {
@@ -16,18 +16,6 @@ export default function LanguageSelect() {
       navigate('/login');
     }
   };
-
-  // Show loading state while auth is initializing
-  if (authLoading) {
-    return (
-      <div className="min-h-full relative bg-black flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-400">Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-full relative bg-black flex flex-col">
