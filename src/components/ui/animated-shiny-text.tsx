@@ -50,8 +50,9 @@ const AnimatedText = React.forwardRef<HTMLSpanElement, AnimatedTextProps>(
           backgroundSize: "200% 100%",
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
           textShadow: isHovered ? "0 0 8px rgba(255,255,255,0.3)" : "none",
-        }}
+        } as React.CSSProperties}
         variants={textVariants}
         initial="initial"
         animate="animate"
