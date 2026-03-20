@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { Mic, Square, ArrowRight, X, ArrowLeft, Volume2 } from 'lucide-react';
+import { Mic, Square, ArrowRight, X, ArrowLeft, Volume2, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { speakText, stopSpeaking } from '../utils/speech';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 export default function VoiceInput() {
-  const { language } = useAppContext();
+  const { language, user } = useAppContext();
   const navigate = useNavigate();
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [timer, setTimer] = useState(0);
   const recognitionRef = useRef<any>(null);
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const texts = {
     en: {
@@ -24,16 +27,18 @@ export default function VoiceInput() {
       stop: 'Stop',
       next: 'Search Nearby',
       cancel: 'Cancel',
-      example: 'Example: "I need a watch shop"'
+      example: 'Example: "I need a watch shop"',
+      saving: 'Saving...'
     },
     hi: {
       title: 'अपनी समस्या बोलें',
-      subtitle: 'माइक पर टैप करें और बताएं कि आपको क्या चाहिए',
+      subtitle: 'माइक पर टैప్ करें और बताएं कि आपको क्या चाहिए',
       recording: 'सुन रहे हैं...',
       stop: 'रोकें',
       next: 'आसपास खोजें',
       cancel: 'रद्द करें',
-      example: 'उदाहरण: "मुझे घड़ी की दुकान चाहिए"'
+      example: 'उदाहरण: "मुझे घड़ी की दुकान चाहिए"',
+      saving: 'सहेज रहे हैं...'
     },
     te: {
       title: 'మీ సమస్యను చెప్పండి',
@@ -42,7 +47,8 @@ export default function VoiceInput() {
       stop: 'ఆపండి',
       next: 'దగ్గరలో వెతకండి',
       cancel: 'రద్దు చేయండి',
-      example: 'ఉదాహరణ: "నాకు వాచ్ షాప్ కావాలి"'
+      example: 'ఉదాహరణ: "నాకు వాచ్ షాప్ కావాలి"',
+      saving: 'సేవ్ చేస్తోంది...'
     }
   };
 
@@ -123,7 +129,24 @@ export default function VoiceInput() {
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    if (!transcript) return;
+    
+    setIsSaving(true);
+    // Save to Firebase
+    if (user) {
+      try {
+        await addDoc(collection(db, 'requests'), {
+          userId: user.uid,
+          type: 'voice',
+          content: transcript,
+          createdAt: new Date().toISOString()
+        });
+      } catch (err) {
+        console.error("Error saving request to Firebase:", err);
+      }
+    }
+    setIsSaving(false);
     navigate('/search-results', { state: { query: transcript } });
   };
 
@@ -208,10 +231,12 @@ export default function VoiceInput() {
 
             <button
                onClick={handleNext}
-               className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20"
+               disabled={isSaving}
+               className="w-full bg-blue-700 hover:bg-blue-600 disabled:opacity-50 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-lg shadow-blue-900/20"
             >
-              {t.next}
-              <ArrowRight size={24} />
+              {isSaving ? <Loader2 className="animate-spin" /> : null}
+              {isSaving ? t.saving : t.next}
+              {!isSaving && <ArrowRight size={24} />}
             </button>
           </motion.div>
         )}

@@ -45,6 +45,20 @@
         "createdAt": { "type": "string", "format": "date-time", "description": "When the SOS was created." }
       },
       "required": ["userId", "status", "address", "createdAt"]
+    },
+    "Request": {
+      "title": "Request",
+      "description": "A user's repair request (voice, photo, or draw).",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The request ID." },
+        "userId": { "type": "string", "description": "The ID of the user who made the request." },
+        "type": { "type": "string", "enum": ["voice", "photo", "draw", "type"], "description": "The type of input." },
+        "content": { "type": "string", "description": "The content of the request (transcript, base64 image, etc.)." },
+        "analysis": { "type": "object", "description": "The AI analysis of the request." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the request was created." }
+      },
+      "required": ["userId", "type", "content", "createdAt"]
     }
   },
   "firestore": {
@@ -59,6 +73,10 @@
     "/sos_requests/{sosId}": {
       "schema": { "$ref": "#/entities/SOSRequest" },
       "description": "Stores emergency SOS requests."
+    },
+    "/requests/{requestId}": {
+      "schema": { "$ref": "#/entities/Request" },
+      "description": "Stores user repair requests."
     }
   }
 }

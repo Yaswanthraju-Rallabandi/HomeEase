@@ -3,10 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { MapPin, Phone, CheckCircle2, Navigation, IndianRupee, Star, ShieldCheck, LogOut, ArrowLeft } from 'lucide-react';
 
+import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
+
 export default function PartnerHome() {
   const { language, user, setIsPartner, setUser } = useAppContext();
   const navigate = useNavigate();
   const [jobStatus, setJobStatus] = useState<'new' | 'accepted' | 'arrived' | 'completed'>('new');
+
+  const handleLogout = async () => {
+    try {
+      if (auth.currentUser) {
+        await signOut(auth);
+      }
+      localStorage.removeItem('mockUser');
+      setIsPartner(false);
+      setUser(null);
+      navigate('/');
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   const texts = {
     en: {
@@ -70,7 +87,7 @@ export default function PartnerHome() {
       <div className="bg-black/90 backdrop-blur-md pt-12 pb-6 px-6 rounded-b-[2rem] shadow-sm border-b border-white/10 flex justify-between items-start sticky top-0 z-10">
         <div className="flex items-start gap-3">
           <button 
-            onClick={() => { setIsPartner(false); setUser(null); navigate('/'); }} 
+            onClick={handleLogout} 
             className="mt-1 p-2 bg-white/10 hover:bg-white/20 rounded-full text-gray-300 transition-colors border border-white/20"
           >
             <LogOut size={20} />

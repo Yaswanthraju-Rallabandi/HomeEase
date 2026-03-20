@@ -1,24 +1,42 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
-import { Search, ArrowRight, X, ArrowLeft } from 'lucide-react';
+import { Search, ArrowRight, X, ArrowLeft, Loader2 } from 'lucide-react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 export default function TypeInput() {
-  const { language } = useAppContext();
+  const { language, user } = useAppContext();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const texts = {
-    en: { title: 'Type Problem', placeholder: 'Describe what you need...', next: 'Search Nearby' },
-    hi: { title: 'लिखकर बताएं', placeholder: 'बताएं कि आपको क्या चाहिए...', next: 'आसपास खोजें' },
-    te: { title: 'టైప్ చేయండి', placeholder: 'మీకు ఏమి కావాలో వివరించండి...', next: 'దగ్గరలో వెతకండి' }
+    en: { title: 'Type Problem', placeholder: 'Describe what you need...', next: 'Search Nearby', saving: 'Saving...' },
+    hi: { title: 'लिखकर बताएं', placeholder: 'बताएं कि आपको क्या चाहिए...', next: 'आसपास खोजें', saving: 'सहेज रहे हैं...' },
+    te: { title: 'టైప్ చేయండి', placeholder: 'మీకు ఏమి కావాలో వివరించండి...', next: 'దగ్గరలో వెతకండి', saving: 'సేవ్ చేస్తోంది...' }
   };
 
   const t = texts[language];
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      setIsSaving(true);
+      // Save to Firebase
+      if (user) {
+        try {
+          await addDoc(collection(db, 'requests'), {
+            userId: user.uid,
+            type: 'type',
+            content: query,
+            createdAt: new Date().toISOString()
+          });
+        } catch (err) {
+          console.error("Error saving request to Firebase:", err);
+        }
+      }
+      setIsSaving(false);
       navigate('/search-results', { state: { query } });
     }
   };
@@ -44,11 +62,12 @@ export default function TypeInput() {
           
           <button
             type="submit"
-            disabled={!query.trim()}
+            disabled={!query.trim() || isSaving}
             className="mt-6 w-full bg-blue-700 hover:bg-blue-600 disabled:bg-white/10 disabled:text-gray-500 text-white font-bold py-4 px-6 rounded-2xl text-xl transition-all flex justify-center items-center gap-2 shadow-md"
           >
-            {t.next}
-            <ArrowRight size={24} />
+            {isSaving ? <Loader2 className="animate-spin" /> : null}
+            {isSaving ? t.saving : t.next}
+            {!isSaving && <ArrowRight size={24} />}
           </button>
         </form>
       </div>
