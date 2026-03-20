@@ -84,7 +84,27 @@ export default function Login() {
       setLoading(false);
       // Store pending role for mock login
       sessionStorage.setItem('pendingRole', role);
-    }, 1500);
+      
+      // Auto-fill OTP and verify after a short delay for the demo
+      setTimeout(() => {
+        setOtp('1234');
+        setTimeout(() => {
+          // Trigger verification automatically
+          const mockUser = {
+            uid: 'mock-user-' + Date.now(),
+            name: role === 'partner' ? 'Raju Plumber' : 'User',
+            phone: phone,
+            role: role
+          };
+          
+          localStorage.setItem('mockUser', JSON.stringify(mockUser));
+          setUser(mockUser);
+          setIsPartner(role === 'partner');
+          sessionStorage.removeItem('pendingRole');
+          // Navigation will be handled by the user useEffect
+        }, 800);
+      }, 600);
+    }, 1000);
   };
 
   const handleVerify = async () => {
@@ -93,7 +113,7 @@ export default function Login() {
     setLoading(true);
     setError('');
 
-    // Simulate verification
+    // Manual verification if user types it
     setTimeout(() => {
       if (otp === '1234') {
         const role = sessionStorage.getItem('pendingRole') || 'user';
@@ -107,12 +127,12 @@ export default function Login() {
         localStorage.setItem('mockUser', JSON.stringify(mockUser));
         setUser(mockUser);
         setIsPartner(role === 'partner');
-        navigate(role === 'partner' ? '/partner' : '/home');
+        sessionStorage.removeItem('pendingRole');
       } else {
         setError(t.invalidOtp);
+        setLoading(false);
       }
-      setLoading(false);
-    }, 1500);
+    }, 800);
   };
 
   const handlePartnerLogin = () => {
